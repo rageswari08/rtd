@@ -1,22 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>RTD Temperature Sensor</title>
-  <style>
-    body { text-align:center; font-family:Arial; background:#001F3F; color:#FFD700; padding-top:80px; }
-    h1 { color:#FFD700; }
-    #temp { font-size:2em; background:#333; color:white; padding:20px; border-radius:10px; display:inline-block; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTD Sensor Temperature Monitor</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f0f0f0, #dbe9f4);
+    text-align: center;
+    padding-top: 80px;
+  }
+  h1 {
+    color: #004d80;
+  }
+  #temperature {
+    font-size: 3em;
+    color: #d12a2a;
+    margin-top: 20px;
+  }
+  button {
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #005fa3;
+  }
+</style>
 </head>
 <body>
-  <h1>RTD Temperature Monitor</h1>
-  <div id="temp">Temperature: 25°C</div>
+  <h1>🌡️ RTD Sensor Temperature Monitor</h1>
+  <button id="connect">Connect to Arduino</button>
+  <div id="temperature">-- °C</div>
 
   <script>
-    setInterval(()=>{
-      let temp = (20 + Math.random()*10).toFixed(2);
-      document.getElementById("temp").innerText = "Temperature: " + temp + " °C";
-    }, 1000);
+    let port;
+    let reader;
+
+    document.getElementById('connect').addEventListener('click', async () => {
+      try {
+        // Request user to select serial port
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 9600 });
+
+        const decoder = new TextDecoderStream();
+        const readableStreamClosed = port.readable.pipeTo(decoder.writable);
+        reader = decoder.readable.getReader();
+
+        document.getElementById('connect').innerText = "Connected ✅";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            // Display temperature on web page
+            document.getElementById('temperature').innerText = value.trim() + " °C";
+          }
+        }
+      } catch (error) {
+        alert("Connection failed: " + error);
+      }
+    });
   </script>
 </body>
 </html>
