@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RTD Temperature Sensor</title>
+  <style>
+    body { text-align:center; font-family:Arial; background:#001F3F; color:#FFD700; padding-top:80px; }
+    h1 { color:#FFD700; }
+    #temp { font-size:2em; background:#333; color:white; padding:20px; border-radius:10px; display:inline-block; }
+  </style>
+</head>
+<body>
+  <h1>RTD Temperature Monitor</h1>
+  <div id="temp">Temperature: 25°C</div>
+
+  <script>
+    setInterval(()=>{
+      let temp = (20 + Math.random()*10).toFixed(2);
+      document.getElementById("temp").innerText = "Temperature: " + temp + " °C";
+    }, 1000);
+  </script>
+</body>
+</html>
